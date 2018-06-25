@@ -1,0 +1,7 @@
+description = 'common utils of the whole project'
+
+dependencies {
+    compile project(':model')
+    compile group: 'org.apache.poi', name: 'poi', version: '3.17'
+    compile group: 'org.apache.poi', name: 'poi-ooxml', version: '3.17'
+}
