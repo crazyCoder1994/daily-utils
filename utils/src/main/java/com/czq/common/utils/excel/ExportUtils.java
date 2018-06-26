@@ -21,63 +21,63 @@ public class ExportUtils {
         XSSFWorkbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("demo");
         org.apache.poi.ss.usermodel.Row headerRow = sheet.createRow(0);
-        setHeaderRowStyle(headerRow,workbook);
         for(int i=0; i< list.size(); i++){
             Field[] fields = list.get(i).getClass().getDeclaredFields();
             if(fields!=null&&fields.length!=0){
                 org.apache.poi.ss.usermodel.Row contentRow = sheet.createRow(i+1);
-                setContentRowStyle(contentRow,workbook);
                 for(int j=0; j< fields.length;){
                     fields[j].setAccessible(true);
                     if(i==0){
                         Row row = fields[j].getAnnotation(Row.class);
                         if(row!=null){
-                            headerRow.createCell(j).setCellValue(row.value());
-                            setCellValue(contentRow.createCell(j),list.get(i),fields[j]);
+                            Cell headerCell = headerRow.createCell(j);
+                            headerCell.setCellValue(row.value());
+                            sheet.setColumnWidth(j,4000);
+                            setHeaderCellStyle(headerCell,workbook);
+                            Cell contentCell = contentRow.createCell(j);
+                            setContentCellStyle(contentCell,workbook);
+                            setCellValue(contentCell,list.get(i),fields[j]);
                             j++;
                         }
                     }else{
                         Row row = fields[j].getAnnotation(Row.class);
                         if(row!=null){
-                            setCellValue(contentRow.createCell(j),list.get(i),fields[j]);
+                            Cell contentCell = contentRow.createCell(j);
+                            setContentCellStyle(contentCell,workbook);
+                            setCellValue(contentCell,list.get(i),fields[j]);
                             j++;
                         }
                     }
                 }
             }
         }
-        autoColumn(sheet);
         workbook.write(new FileOutputStream(file));
         return workbook;
     }
 
-    private static void setHeaderRowStyle(org.apache.poi.ss.usermodel.Row headerRow, Workbook workbook) {
+    private static void setHeaderCellStyle(Cell headerCell, Workbook workbook) {
         CellStyle cellStyle = workbook.createCellStyle();
         cellStyle.setAlignment(HorizontalAlignment.CENTER);
+        cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+        cellStyle.setWrapText(true);
         Font font = workbook.createFont();
         font.setBold(true);
-        font.setFontName("黑体");
-        font.setFontHeightInPoints((short)14);
+        font.setFontHeightInPoints((short)12);
         cellStyle.setFont(font);
-        headerRow.setRowStyle(cellStyle);
+        headerCell.setCellStyle(cellStyle);
     }
 
-    private static void setContentRowStyle(org.apache.poi.ss.usermodel.Row contentRow, Workbook workbook){
+    private static void setContentCellStyle(Cell contentCell, Workbook workbook){
         CellStyle cellStyle = workbook.createCellStyle();
         cellStyle.setAlignment(HorizontalAlignment.CENTER);
+        cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+        cellStyle.setWrapText(true);
         Font font = workbook.createFont();
-        font.setFontHeightInPoints((short)12);
-        contentRow.setRowStyle(cellStyle);
+        font.setFontHeightInPoints((short)10);
+        cellStyle.setFont(font);
+        contentCell.setCellStyle(cellStyle);
     }
 
-    private static void autoColumn(Sheet sheet) {
-        if(sheet.getRow(0)!=null){
-            int maxColumn = sheet.getRow(0).getLastCellNum();
-            for(short i=0; i<maxColumn; i++){
-                sheet.autoSizeColumn(i,true);
-            }
-        }
-    }
 
     private static <T> void setCellValue(Cell cell, T t, Field field) throws IllegalAccessException {
         String fieldType = field.getType().getSimpleName().toLowerCase();

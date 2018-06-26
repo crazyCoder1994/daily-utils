@@ -1,4 +1,5 @@
 rootProject.name = 'daily-utils'
 include 'model'
 include 'utils'
+include 'web'
 

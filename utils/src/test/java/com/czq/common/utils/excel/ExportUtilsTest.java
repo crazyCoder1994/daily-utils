@@ -18,10 +18,10 @@ public class ExportUtilsTest {
         OrderDetail detail = new OrderDetail();
         detail.setPrice(1000);
         detail.setAddress("hello");
-        detail.setBuyDate("2018-08-01");
+        detail.setBuyDate("2018-08-01 00:00:00");
         list.add(detail);
         list.add(new OrderDetail());
-        File file = new File("/Users/chenziqi/Desktop/demo.xlsx");
+        File file = new File("C:\\Users\\DELL\\Desktop\\demo.xlsx");
         if(!file.exists()){
             file.createNewFile();
         }
